@@ -204,7 +204,7 @@ class PlayMap {
                         length = end_y - current_y;
                     } else {
                         length = getRandom(min_length, (((MAP_Y - 1) - 1) - current_y));
-                        while (((current_x + length == end_x) || (current_x + length == end_x - 1)) && (current_x == end_x))
+                        while (((current_y + length == end_y) || (current_y + length == end_y - 1)) && (current_x == end_x))
                             length = getRandom(min_length, (((MAP_Y - 1) - 1) - current_y));
                     }
 
@@ -225,7 +225,7 @@ class PlayMap {
 
             cout << endl;
 
-            MAP_MATRIX[current_y][current_x] = 'S';
+            MAP_MATRIX[start / MAP_Y][start % MAP_Y] = 'S';
             MAP_MATRIX[end_y][end_x] = 'X';
 
         }
