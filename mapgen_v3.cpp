@@ -261,8 +261,9 @@ class PlayMap {
                         boxesPlaced = false;
                         tries = 0;
 
-                        while (!boxesPlaced || tries == 5) {
+                        while (!boxesPlaced) {
 
+                            if (tries == 5) break;
                             tries++;
 
                             potential_direction = getRandom(0, 3);
@@ -287,8 +288,8 @@ class PlayMap {
                                 boxesPlaced = true;
 
                                 //Moving the initial boxes
-                                MAP_MATRIX[current_y][current_x - potential_distance + 1] = 'B';
-                                MAP_MATRIX[current_y][current_x] = '.';
+                                MAP_MATRIX[current_y][current_x - potential_distance + 1] = 'b';
+                                if (MAP_MATRIX[current_y][current_x] != 'X') MAP_MATRIX[current_y][current_x] = '.';
 
                             } else if (potential_direction == 1) {
 
@@ -309,8 +310,8 @@ class PlayMap {
                                 MAP_MATRIX[current_y + 1][current_x] = 'b';
                                 boxesPlaced = true;
 
-                                MAP_MATRIX[current_y - potential_distance + 1][current_x] = 'B';
-                                MAP_MATRIX[current_y][current_x] = '.';
+                                MAP_MATRIX[current_y - potential_distance + 1][current_x] = 'b';
+                                if (MAP_MATRIX[current_y][current_x] != 'X') MAP_MATRIX[current_y][current_x] = '.';
 
                             } else if (potential_direction == 2) {
 
@@ -331,8 +332,8 @@ class PlayMap {
                                 MAP_MATRIX[current_y][current_x - 1] = 'b';
                                 boxesPlaced = true;
 
-                                MAP_MATRIX[current_y][current_x + potential_distance - 1] = 'B';
-                                MAP_MATRIX[current_y][current_x] = '.';
+                                MAP_MATRIX[current_y][current_x + potential_distance - 1] = 'b';
+                                if (MAP_MATRIX[current_y][current_x] != 'X') MAP_MATRIX[current_y][current_x] = '.';
 
                             } else {
 
@@ -353,8 +354,8 @@ class PlayMap {
                                 MAP_MATRIX[current_y - 1][current_x] = 'b';
                                 boxesPlaced = true;
 
-                                MAP_MATRIX[current_y + potential_distance - 1][current_x] = 'B';
-                                MAP_MATRIX[current_y][current_x] = '.';
+                                MAP_MATRIX[current_y + potential_distance - 1][current_x] = 'b';
+                                if (MAP_MATRIX[current_y][current_x] != 'X') MAP_MATRIX[current_y][current_x] = '.';
 
                             }
 
@@ -379,6 +380,7 @@ int main() {
 
     //random number generator setup
     srand(time(0));
+    cout << time(0) << endl;
 
     PlayMap map(WIDTH, HEIGHT, LINES, OBJECTS);
 
