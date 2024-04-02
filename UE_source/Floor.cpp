@@ -13,11 +13,12 @@ AFloor::AFloor()
 	RootComponent = MeshComponent;
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Script/Engine.StaticMesh'/Game/Models/floor.floor'"));
-	if (MeshAsset.Succeeded()) {
-		MeshComponent->SetStaticMesh(MeshAsset.Object);
-	} else {
-		UE_LOG(LogTemp, Warning, TEXT("MeshAsset failed."));
-	}
+	if (MeshAsset.Succeeded()) MeshComponent->SetStaticMesh(MeshAsset.Object);
+	else UE_LOG(LogTemp, Warning, TEXT("MeshAsset(Floor) failed."));
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialAsset(TEXT("/Script/Engine.Material'/Game/Materials/floorMaterial.floorMaterial'"));
+	if (MaterialAsset.Succeeded()) MeshComponent->SetMaterial(0, MaterialAsset.Object);
+	else UE_LOG(LogTemp, Warning, TEXT("MaterialAsset(Floor) failed."));
 
 	SetActorScale3D(FVector(1.0f, 1.0f, 1.0f));
 

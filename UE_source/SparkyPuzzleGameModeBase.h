@@ -3,6 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Floor.h"
+#include "MapGenerator.h"
+#include "Cubicle.h"
+#include "SparkyPlayer.h"
 #include "GameFramework/GameModeBase.h"
 #include "SparkyPuzzleGameModeBase.generated.h"
 
@@ -15,6 +19,10 @@ class SPARKYPUZZLE_API ASparkyPuzzleGameModeBase : public AGameModeBase
 public:
 
 	virtual void BeginPlay() override;
+
+	int generateCubicles(MapGenerator map);
+
+	MapGenerator generateMap(int x, int y, int l, int o);
 
 private:
 
