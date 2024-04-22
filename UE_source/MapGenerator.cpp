@@ -9,6 +9,10 @@ MapGenerator::MapGenerator(int width, int height, int lines, int objects)
     MAP_Y = height;
     N_OF_LINES_TO_WIN = lines;
     N_OF_OBJECTS = objects;
+    STARTING_X = 0;
+    ENDING_X = 0;
+    STARTING_Y = 0;
+    ENDING_Y = 0;
 
     MAP_MATRIX.Init(TArray<char>(), MAP_Y);
     for (int i = 0; i < MAP_Y; i++) {
@@ -29,21 +33,28 @@ int MapGenerator::getRandom(int lower, int upper)
 int MapGenerator::generatePaths()
 {
     //creating a starting and a finishing point on the map
-    int start = getRandom(0, MAP_X * MAP_Y);
-    int finish = getRandom(0, MAP_X * MAP_Y);
-    while (start == finish) finish = getRandom(0, MAP_X * MAP_Y);
+    
+    int start_x = getRandom(0, MAP_X - 1);
+    int start_y = getRandom(0, MAP_Y - 1);
 
-    int current_x = start % MAP_Y;
-    int current_y = start / MAP_Y;
-    int end_x = finish % MAP_Y;
-    if (end_x == 0) end_x++;
-    else if (end_x == MAP_X - 1) end_x--;
-    int end_y = finish / MAP_Y;
-    if (end_y == 0) end_y++;
-    else if (end_y == MAP_Y - 1) end_y--;
+    int end_x = start_x;
+    int end_y = start_y;
 
-    MAP_MATRIX[current_y][current_x] = 'S';
-    MAP_MATRIX[end_y][end_x] = 'X';
+    while (start_x == end_x && start_y == end_y) {
+        end_x = getRandom(1, MAP_X - 2);
+        end_y = getRandom(1, MAP_Y - 2);
+    }
+
+    int current_x = start_x;
+    int current_y = start_y;
+
+    STARTING_X = start_x;
+    STARTING_Y = start_y;
+    ENDING_X = end_x;
+    ENDING_Y = end_y;
+
+    MAP_MATRIX[STARTING_Y][STARTING_X] = 'S';
+    MAP_MATRIX[ENDING_Y][ENDING_X] = 'X';
 
     //creating a solution path from start to finish
 
@@ -220,8 +231,8 @@ int MapGenerator::generatePaths()
         }
     }
 
-    MAP_MATRIX[start / MAP_Y][start % MAP_Y] = 'S';
-    MAP_MATRIX[end_y][end_x] = 'X';
+    MAP_MATRIX[STARTING_Y][STARTING_X] = 'S';
+    MAP_MATRIX[ENDING_Y][ENDING_X] = 'X';
 
     return 0;
 }
@@ -346,6 +357,9 @@ int MapGenerator::placeBoxes()
 
         }
     }
+
+    MAP_MATRIX[STARTING_Y][STARTING_X] = 'S';
+    MAP_MATRIX[ENDING_Y][ENDING_X] = 'X';
 
     return 0;
 }

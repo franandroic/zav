@@ -7,6 +7,7 @@
 #include "MapGenerator.h"
 #include "Cubicle.h"
 #include "SparkyPlayer.h"
+#include "SparkyPlayerController.h"
 #include "GameFramework/GameModeBase.h"
 #include "SparkyPuzzleGameModeBase.generated.h"
 
@@ -17,6 +18,8 @@ class SPARKYPUZZLE_API ASparkyPuzzleGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+
+	ASparkyPuzzleGameModeBase();
 
 	virtual void BeginPlay() override;
 
@@ -37,5 +40,17 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int objects = 20;
+
+	UPROPERTY(EditAnywhere)
+	FVector mapCenter;
+
+	UPROPERTY(EditAnywhere)
+	float longestSide;
+
+public:
+
+	FVector GetMapCenter();
+
+	float GetLongestSide();
 	
 };

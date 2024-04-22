@@ -25,6 +25,12 @@ private:
 	int N_OF_LINES_TO_WIN;
 	//number of objects to be placed aside from the ones necessary to beat the level
 	int N_OF_OBJECTS;
+	//starting position
+	int STARTING_X;
+	int STARTING_Y;
+	//ending position
+	int ENDING_X;
+	int ENDING_Y;
 
 public:
 

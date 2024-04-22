@@ -3,6 +3,12 @@
 
 #include "SparkyPuzzleGameModeBase.h"
 
+ASparkyPuzzleGameModeBase::ASparkyPuzzleGameModeBase()
+{
+    PlayerControllerClass = ASparkyPlayerController::StaticClass();
+    DefaultPawnClass = nullptr;
+}
+
 void ASparkyPuzzleGameModeBase::BeginPlay()
 {
     Super::BeginPlay();
@@ -49,6 +55,10 @@ int ASparkyPuzzleGameModeBase::generateCubicles(MapGenerator map)
         }
     }
 
+    FloorTile->GetActorBounds(false, FloorOrigin, FloorExtent);
+    mapCenter = FloorOrigin;
+    longestSide = FMath::Max(FloorExtent.X, FloorExtent.Y);
+
     return 0;
 }
 
@@ -65,4 +75,14 @@ MapGenerator ASparkyPuzzleGameModeBase::generateMap(int x, int y, int l, int o)
     //map.printLog();
 
     return map;
+}
+
+FVector ASparkyPuzzleGameModeBase::GetMapCenter()
+{
+    return mapCenter;
+}
+
+float ASparkyPuzzleGameModeBase::GetLongestSide()
+{
+    return longestSide;
 }
