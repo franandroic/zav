@@ -13,6 +13,11 @@ void ASparkyPuzzleGameModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    regenerateMap();
+}
+
+void ASparkyPuzzleGameModeBase::regenerateMap()
+{
     srand(time(0));
     UE_LOG(LogTemp, Warning, TEXT("Seed: %d"), time(0));
 

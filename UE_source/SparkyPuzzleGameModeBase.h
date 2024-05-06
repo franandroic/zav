@@ -23,6 +23,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	void regenerateMap();
+
 	int generateCubicles(MapGenerator map);
 
 	MapGenerator generateMap(int x, int y, int l, int o);
