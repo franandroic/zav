@@ -29,9 +29,13 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsSelected;
 
-private:
+	void ToggleMaterial();
 
 	UPROPERTY(VisibleAnywhere)
+	FVector2D currentLocation;
+
+private:
+
 	UStaticMeshComponent *MeshComponent;
 
 };

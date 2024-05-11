@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Containers/Map.h"
 #include "Floor.h"
 #include "MapGenerator.h"
 #include "Cubicle.h"
@@ -54,5 +55,11 @@ public:
 	FVector GetMapCenter();
 
 	float GetLongestSide();
+
+	int GetWidth();
+
+	int GetHeight();
+
+	TMap<FString, bool> GameMap;
 	
 };

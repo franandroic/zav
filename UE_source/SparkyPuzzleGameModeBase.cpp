@@ -42,15 +42,28 @@ int ASparkyPuzzleGameModeBase::generateCubicles(MapGenerator map)
     FloorTile->SetActorScale3D(FVector(width, height, 1.0));
     FloorTile->AddActorLocalOffset(FVector(((floorTileX * width) / 2) - FloorExtent.X, ((floorTileY * height) / 2) - FloorExtent.Y, 0.0f));
 
+    GameMap.Empty();
+    FString tempString;
+
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             if (map.MAP_MATRIX[y][x] == 'B') {
                 ACubicle *BoxCubicle = GetWorld()->SpawnActor<ACubicle>(FVector(x * floorTileX, y * floorTileY, 121.0f), FRotator::ZeroRotator);
-                if (BoxCubicle) BoxCubicle->SetActorScale3D(FVector(1.0, 1.0, 1.0));
+                if (BoxCubicle) {
+                    BoxCubicle->SetActorScale3D(FVector(1.0, 1.0, 1.0));
+                    BoxCubicle->currentLocation = FVector2D(x, y);
+                    tempString = FString::FromInt(x) + "//" + FString::FromInt(y);
+                    GameMap.Add(tempString, true);
+                }
                 else return 1;
             } else if (map.MAP_MATRIX[y][x] == 'S') {
                 ASparkyPlayer *SparkyCubicle = GetWorld()->SpawnActor<ASparkyPlayer>(FVector(x * floorTileX, y * floorTileY, 121.0f), FRotator::ZeroRotator);
-                if (SparkyCubicle) SparkyCubicle->SetActorScale3D(FVector(1.0, 1.0, 1.0));
+                if (SparkyCubicle) {
+                    SparkyCubicle->SetActorScale3D(FVector(1.0, 1.0, 1.0));
+                    SparkyCubicle->currentLocation = FVector2D(x, y);
+                    tempString = FString::FromInt(x) + "//" + FString::FromInt(y);
+                    GameMap.Add(tempString, true);
+                }
                 else return 1;
             } else if (map.MAP_MATRIX[y][x] == 'X') {
                 AFloor *EndTile = GetWorld()->SpawnActor<AFloor>(FVector(x * floorTileX, y * floorTileY, 25.0f), FRotator::ZeroRotator);
@@ -90,4 +103,14 @@ FVector ASparkyPuzzleGameModeBase::GetMapCenter()
 float ASparkyPuzzleGameModeBase::GetLongestSide()
 {
     return longestSide;
+}
+
+int ASparkyPuzzleGameModeBase::GetWidth()
+{
+    return width;
+}
+
+int ASparkyPuzzleGameModeBase::GetHeight()
+{
+    return height;
 }

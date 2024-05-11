@@ -25,12 +25,18 @@ public:
 
 	void SelectObject();
 
+	void SlideUp();
+
+	void SlideLeft();
+
+	void SlideDown();
+
+	void SlideRight();
+
 private:
 
-	UPROPERTY(VisibleAnywhere)
 	ASparkyPlayer *SelectedSparky;
 
-	UPROPERTY(VisibleAnywhere)
 	ACubicle *SelectedCubicle;
 	
 };

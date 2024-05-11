@@ -12,6 +12,10 @@ ASparkyPlayerController::ASparkyPlayerController()
     } else {
         InputComponent->BindAction("Reload", IE_Pressed, this, &ASparkyPlayerController::ReloadMap);
         InputComponent->BindAction("Select", IE_Pressed, this, &ASparkyPlayerController::SelectObject);
+        InputComponent->BindAction("MoveUp", IE_Pressed, this, &ASparkyPlayerController::SlideUp);
+        InputComponent->BindAction("MoveLeft", IE_Pressed, this, &ASparkyPlayerController::SlideLeft);
+        InputComponent->BindAction("MoveDown", IE_Pressed, this, &ASparkyPlayerController::SlideDown);
+        InputComponent->BindAction("MoveRight", IE_Pressed, this, &ASparkyPlayerController::SlideRight);
     }
 }
 
@@ -64,34 +68,94 @@ void ASparkyPlayerController::SelectObject()
 
     if (GetHitResultUnderCursorForObjects(ObjectTypes, false, HitResult)) {
 
-        ACubicle *ClickedCubicle = Cast<ACubicle>(HitResult.GetActor());
-        if (ClickedCubicle) {
+        if (HitResult.GetActor()->IsA<ACubicle>()) {
+
+            ACubicle *ClickedCubicle = Cast<ACubicle>(HitResult.GetActor());
 
             UE_LOG(LogTemp, Warning, TEXT("Clicked on cubicle: %s."), *ClickedCubicle->GetName());
 
             if (SelectedSparky) {
                 SelectedSparky->bIsSelected = false;
+                SelectedSparky->ToggleMaterial();
                 SelectedSparky = nullptr;
             } else if (SelectedCubicle) {
                 SelectedCubicle->bIsSelected = false;
+                SelectedCubicle->ToggleMaterial();
             }
 
             ClickedCubicle->bIsSelected = true;
+            ClickedCubicle->ToggleMaterial();
             SelectedCubicle = ClickedCubicle;
-        }
 
-        ASparkyPlayer *ClickedSparky = Cast<ASparkyPlayer>(HitResult.GetActor());
-        if (ClickedSparky) {
+        } else if (HitResult.GetActor()->IsA<ASparkyPlayer>()) {
+
+            ASparkyPlayer *ClickedSparky = Cast<ASparkyPlayer>(HitResult.GetActor());
 
             UE_LOG(LogTemp, Warning, TEXT("Clicked on Sparky himself: %s."), *ClickedSparky->GetName());
 
             if (!SelectedSparky) {
                 SelectedCubicle->bIsSelected = false;
+                SelectedCubicle->ToggleMaterial();
                 SelectedCubicle = nullptr;
                 ClickedSparky->bIsSelected = true;
+                ClickedSparky->ToggleMaterial();
                 SelectedSparky = ClickedSparky;
             }
         }
 
     }
+}
+
+void ASparkyPlayerController::SlideUp()
+{
+    ASparkyPuzzleGameModeBase *gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
+    FString tempString;
+    int currentX = SelectedCubicle->currentLocation.X;
+    int currentY = SelectedCubicle->currentLocation.Y;
+
+    if (SelectedCubicle) {
+
+        for (int x = currentX + 1; x < gamemode->GetHeight(); x++) {
+            
+            tempString = FString::FromInt(x) + "//" + FString::FromInt(currentY);
+
+            if (gamemode->GameMap.Contains(tempString) && gamemode->GameMap[tempString] == true) {
+
+                if (x == currentX + 1) return;
+
+                SelectedCubicle->SlideMove(FVector((x - 1) * 300.0f, currentY * 300.0f, 121.0f));
+
+                tempString = FString::FromInt(currentX) + "//" + FString::FromInt(currentY);
+                gamemode->GameMap[tempString] = false;
+
+                tempString = FString::FromInt(x - 1) + "//" + FString::FromInt(currentY);
+                if (gamemode->GameMap.Contains(tempString)) gamemode->GameMap[tempString] = true;
+                else gamemode->GameMap.Add(tempString, true);
+
+                SelectedCubicle->currentLocation.X = x - 1;
+
+                return;
+            }
+        }
+
+        SelectedCubicle->SlideMove(FVector((gamemode->GetHeight() + 5) * 300.0f, currentY * 300.0f, 121.1f));
+
+        tempString = FString::FromInt(currentX) + "//" + FString::FromInt(currentY);
+        gamemode->GameMap[tempString] = false;
+    }
+}
+
+void ASparkyPlayerController::SlideLeft()
+{
+    ASparkyPuzzleGameModeBase *gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
+}
+
+void ASparkyPlayerController::SlideDown()
+{
+    ASparkyPuzzleGameModeBase *gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
+}
+
+void ASparkyPlayerController::SlideRight()
+{
+    ASparkyPuzzleGameModeBase *gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
 }
