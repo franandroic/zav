@@ -36,12 +36,18 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	FVector2D currentLocation;
 
-private:
-
-	UStaticMeshComponent *MeshComponent;
+	UPROPERTY(VisibleAnywhere)
+	bool bIsSparky;
 
 	UPROPERTY(VisibleAnywhere)
 	bool bIsMoving;
+
+protected:
+
+	UStaticMeshComponent *MeshComponent;
+
+	UMaterialInterface *CubicleMaterial;
+	UMaterialInterface *CubicleHMaterial;
 
 	FVector MoveEndLocation;
 

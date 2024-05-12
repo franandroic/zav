@@ -23,9 +23,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void ApplyEndpointMaterial();
+
 private:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent *MeshComponent;
+
+	UMaterialInterface *EndpointMaterial;
 
 };

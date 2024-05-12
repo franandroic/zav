@@ -5,6 +5,7 @@
 
 ASparkyPuzzleGameModeBase::ASparkyPuzzleGameModeBase()
 {
+    PrimaryActorTick.bCanEverTick = true;
     PlayerControllerClass = ASparkyPlayerController::StaticClass();
     DefaultPawnClass = nullptr;
 }
@@ -16,14 +17,35 @@ void ASparkyPuzzleGameModeBase::BeginPlay()
     regenerateMap();
 }
 
+void ASparkyPuzzleGameModeBase::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    if (state == 0) {
+        if (SparkyHimself->currentLocation.X == endLocation.X && SparkyHimself->currentLocation.Y == endLocation.Y && SparkyHimself->bIsMoving == false) {
+            EndGame(true);
+        } else if (SparkyHimself->currentLocation.X < 0 || SparkyHimself->currentLocation.X > width || SparkyHimself->currentLocation.Y < 0 || SparkyHimself->currentLocation.Y > height) {
+            EndGame(false);
+        }
+    }
+}
+
 void ASparkyPuzzleGameModeBase::regenerateMap()
 {
-    srand(time(0));
-    UE_LOG(LogTemp, Warning, TEXT("Seed: %d"), time(0));
+    seed = time(0);
+
+    resetMap();
+}
+
+void ASparkyPuzzleGameModeBase::resetMap()
+{
+    srand(seed);
 
     MapGenerator map = generateMap(width, height, lines, objects);
 
     generateCubicles(map);
+
+    state = 0;
 }
 
 int ASparkyPuzzleGameModeBase::generateCubicles(MapGenerator map)
@@ -47,28 +69,35 @@ int ASparkyPuzzleGameModeBase::generateCubicles(MapGenerator map)
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
+
             if (map.MAP_MATRIX[y][x] == 'B') {
-                ACubicle *BoxCubicle = GetWorld()->SpawnActor<ACubicle>(FVector(x * floorTileX, y * floorTileY, 121.0f), FRotator::ZeroRotator);
+
+                ACubicle *BoxCubicle = GetWorld()->SpawnActor<ACubicleBox>(FVector(x * floorTileX, y * floorTileY, 121.0f), FRotator::ZeroRotator);
+
                 if (BoxCubicle) {
-                    BoxCubicle->SetActorScale3D(FVector(1.0, 1.0, 1.0));
                     BoxCubicle->currentLocation = FVector2D(x, y);
                     tempString = FString::FromInt(x) + "//" + FString::FromInt(y);
                     GameMap.Add(tempString, true);
-                }
-                else return 1;
+                } else return 1;
+
             } else if (map.MAP_MATRIX[y][x] == 'S') {
-                ASparkyPlayer *SparkyCubicle = GetWorld()->SpawnActor<ASparkyPlayer>(FVector(x * floorTileX, y * floorTileY, 121.0f), FRotator::ZeroRotator);
+
+                ACubicle *SparkyCubicle = GetWorld()->SpawnActor<ACubicleSparky>(FVector(x * floorTileX, y * floorTileY, 121.0f), FRotator::ZeroRotator);
+
                 if (SparkyCubicle) {
-                    SparkyCubicle->SetActorScale3D(FVector(1.0, 1.0, 1.0));
                     SparkyCubicle->currentLocation = FVector2D(x, y);
                     tempString = FString::FromInt(x) + "//" + FString::FromInt(y);
                     GameMap.Add(tempString, true);
-                }
-                else return 1;
+                    SparkyHimself = SparkyCubicle;
+                } else return 1;
+
             } else if (map.MAP_MATRIX[y][x] == 'X') {
                 AFloor *EndTile = GetWorld()->SpawnActor<AFloor>(FVector(x * floorTileX, y * floorTileY, 25.0f), FRotator::ZeroRotator);
-                if (EndTile) EndTile->SetActorScale3D(FVector(1.0, 1.0, 0.25));
-                else return 1;
+                if (EndTile) {
+                    EndTile->SetActorScale3D(FVector(1.0, 1.0, 0.25));
+                    EndTile->ApplyEndpointMaterial();
+                    endLocation = FVector2D(x, y);
+                } else return 1;
             }
         }
     }
@@ -113,4 +142,44 @@ int ASparkyPuzzleGameModeBase::GetWidth()
 int ASparkyPuzzleGameModeBase::GetHeight()
 {
     return height;
+}
+
+void ASparkyPuzzleGameModeBase::EndGame(bool bVictory)
+{
+    if (bVictory) {
+        state = 1;
+        UE_LOG(LogTemp, Warning, TEXT("Victory!"));
+        ReloadMap();
+        state = 0;
+    } else {
+        state = 2;
+        UE_LOG(LogTemp, Warning, TEXT("Defeat!"));
+        RefreshMap();
+        state = 0;
+    }
+}
+
+void ASparkyPuzzleGameModeBase::ReloadMap()
+{
+    DeleteMap();
+
+    regenerateMap();
+}
+
+void ASparkyPuzzleGameModeBase::RefreshMap()
+{
+    DeleteMap();
+
+    resetMap();
+}
+
+void ASparkyPuzzleGameModeBase::DeleteMap()
+{
+    for (TActorIterator<APawn> PawnItr(GetWorld()); PawnItr; ++PawnItr) {
+        if (PawnItr->GetName().Left(7) == TEXT("Cubicle")) PawnItr->Destroy();
+    }
+
+    for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+        if (ActorItr->GetName().Left(5) == TEXT("Floor")) ActorItr->Destroy();
+    }
 }

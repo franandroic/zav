@@ -22,6 +22,9 @@ AFloor::AFloor()
 
 	SetActorScale3D(FVector(1.0f, 1.0f, 1.0f));
 
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> EndpointMaterialAsset(TEXT("/Script/Engine.Material'/Game/Materials/endpointMaterial.endpointMaterial'"));
+	if (EndpointMaterialAsset.Succeeded()) EndpointMaterial = EndpointMaterialAsset.Object;
+	else UE_LOG(LogTemp, Warning, TEXT("EndpointMaterialAsset(Floor) failed."));
 }
 
 // Called when the game starts or when spawned
@@ -38,3 +41,7 @@ void AFloor::Tick(float DeltaTime)
 
 }
 
+void AFloor::ApplyEndpointMaterial()
+{
+	if (EndpointMaterial) MeshComponent->SetMaterial(0, EndpointMaterial);
+}

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
-#include "SparkyPlayer.h"
 #include "Cubicle.h"
 #include "BirdCamera.h"
 #include "SparkyPlayerController.generated.h"
@@ -21,8 +20,6 @@ public:
 
 	virtual void BeginPlay() override;
 
-	void ReloadMap();
-
 	void SelectObject();
 
 	void SlideUp();
@@ -35,8 +32,10 @@ public:
 
 private:
 
-	ASparkyPlayer *SelectedSparky;
-
 	ACubicle *SelectedCubicle;
+
+	void ReloadMap();
+
+	void RefreshMap();
 	
 };
