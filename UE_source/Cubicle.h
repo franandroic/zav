@@ -29,9 +29,28 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsSelected;
 
-private:
+	void ToggleMaterial();
+
+	void SlideMove(FVector EndLocation);
 
 	UPROPERTY(VisibleAnywhere)
+	FVector2D currentLocation;
+
+	UPROPERTY(VisibleAnywhere)
+	bool bIsSparky;
+
+	UPROPERTY(VisibleAnywhere)
+	bool bIsMoving;
+
+protected:
+
 	UStaticMeshComponent *MeshComponent;
+
+	UMaterialInterface *CubicleMaterial;
+	UMaterialInterface *CubicleHMaterial;
+
+	FVector MoveEndLocation;
+
+	FVector MoveDirection;
 
 };

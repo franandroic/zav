@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Containers/Map.h"
 #include "Floor.h"
 #include "MapGenerator.h"
-#include "Cubicle.h"
-#include "SparkyPlayer.h"
+#include "CubicleBox.h"
+#include "CubicleSparky.h"
+#include "SparkyPlayerController.h"
 #include "GameFramework/GameModeBase.h"
 #include "SparkyPuzzleGameModeBase.generated.h"
-
 
 UCLASS()
 class SPARKYPUZZLE_API ASparkyPuzzleGameModeBase : public AGameModeBase
@@ -18,7 +19,15 @@ class SPARKYPUZZLE_API ASparkyPuzzleGameModeBase : public AGameModeBase
 
 public:
 
+	ASparkyPuzzleGameModeBase();
+
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	void regenerateMap();
+
+	void resetMap();
 
 	int generateCubicles(MapGenerator map);
 
@@ -37,5 +46,42 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int objects = 20;
+
+	UPROPERTY(EditAnywhere)
+	FVector mapCenter;
+
+	UPROPERTY(EditAnywhere)
+	float longestSide;
+
+	UPROPERTY(VisibleAnywhere)
+	int seed;
+
+	ACubicle *SparkyHimself;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector2D endLocation;
+
+	void EndGame(bool bVictory);
+
+	void DeleteMap();
+
+public:
+
+	FVector GetMapCenter();
+
+	float GetLongestSide();
+
+	int GetWidth();
+
+	int GetHeight();
+
+	TMap<FString, bool> GameMap;
+
+	UPROPERTY(VisibleAnywhere)
+	int state; //0 = IN_PROGRESS, 1 = SUCCESS, 2 = FAIL, 3 = IN_MOTION
+
+	void ReloadMap();
+
+	void RefreshMap();
 	
 };

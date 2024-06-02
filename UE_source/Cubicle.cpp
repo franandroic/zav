@@ -9,19 +9,6 @@ ACubicle::ACubicle()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	RootComponent = MeshComponent;
-
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Script/Engine.StaticMesh'/Game/Models/box.box'"));
-	if (MeshAsset.Succeeded()) MeshComponent->SetStaticMesh(MeshAsset.Object);
-	else UE_LOG(LogTemp, Warning, TEXT("MeshAsset(Box) failed."));
-
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialAsset(TEXT("/Script/Engine.Material'/Game/Materials/boxMaterial.boxMaterial'"));
-	if (MaterialAsset.Succeeded()) MeshComponent->SetMaterial(0, MaterialAsset.Object);
-	else UE_LOG(LogTemp, Warning, TEXT("MaterialAsset(Box) failed."));
-
-	SetActorScale3D(FVector(1.0f, 1.0f, 1.0f));
-
 }
 
 // Called when the game starts or when spawned
@@ -29,12 +16,30 @@ void ACubicle::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	bIsMoving = false;
 }
 
 // Called every frame
 void ACubicle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//UE_LOG(LogTemp, Warning, TEXT("%d"), bIsMoving);
+
+	if (bIsMoving) {
+
+		FVector locationIncrement = GetActorLocation() + MoveDirection * 6000.0f * DeltaTime;
+		SetActorLocation(locationIncrement);
+
+		//UE_LOG(LogTemp, Warning, TEXT("A: %f %f %f, B: %f %f %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z, MoveEndLocation.X, MoveEndLocation.Y, MoveEndLocation.Z);
+
+		if ((GetActorLocation() - MoveEndLocation).Size() < 100.0f) {
+			bIsMoving = false;
+			SetActorLocation(MoveEndLocation);
+			if (MoveEndLocation.Z == 121.1f) Destroy();
+		}
+
+	}
 
 }
 
@@ -45,3 +50,20 @@ void ACubicle::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void ACubicle::ToggleMaterial()
+{
+		if (!bIsSelected) {
+			if (CubicleMaterial) MeshComponent->SetMaterial(0, CubicleMaterial);
+		} else {
+			if (CubicleMaterial) MeshComponent->SetMaterial(0, CubicleHMaterial);
+		}
+}
+
+void ACubicle::SlideMove(FVector EndLocation)
+{
+	if (!bIsMoving) {
+		MoveEndLocation = EndLocation;
+		MoveDirection = (MoveEndLocation - GetActorLocation()).GetSafeNormal();
+		bIsMoving = true;
+	}
+}

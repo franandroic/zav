@@ -4,16 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Floor.generated.h"
+#include "Camera/CameraComponent.h"
+#include "BirdCamera.generated.h"
 
 UCLASS()
-class SPARKYPUZZLE_API AFloor : public AActor
+class SPARKYPUZZLE_API ABirdCamera : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AFloor();
+	ABirdCamera();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,13 +24,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void ApplyEndpointMaterial();
-
 private:
 
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent *MeshComponent;
+	UCameraComponent *CameraComponent;
 
-	UMaterialInterface *EndpointMaterial;
+public:
+
+	UCameraComponent *GetCameraComponent();
 
 };
