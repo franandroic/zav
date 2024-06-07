@@ -8,6 +8,7 @@
 #include "Cubicle.h"
 #include "BirdCamera.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/Engine.h"
 #include "SparkyPlayerController.generated.h"
 
 /**
@@ -24,6 +25,14 @@ public:
 
 	virtual void BeginPlay() override;
 
+private:
+
+	ABirdCamera* BirdCameraActorOne;
+
+	ABirdCamera* BirdCameraActorTwo;
+
+	ACubicle* SelectedCubicle;
+
 	void SelectObject();
 
 	void SlideUp();
@@ -34,14 +43,24 @@ public:
 
 	void SlideRight();
 
-private:
-
-	ABirdCamera* BirdCameraActor;
-
-	ACubicle* SelectedCubicle;
-
 	void ReloadMap();
 
 	void RefreshMap();
+
+	void ChangeCamera();
+
+	void ShowInfo();
+
+	void AddWidth();
+
+	void SubtractWidth();
+
+	void AddHeight();
+
+	void SubtractHeight();
+
+public:
+
+	void setupCameras();
 	
 };

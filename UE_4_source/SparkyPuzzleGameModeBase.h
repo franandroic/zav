@@ -38,6 +38,8 @@ public:
 
 private:
 
+	ASparkyPlayerController *controller;
+
 	UPROPERTY(EditAnywhere)
 	int width = 10;
 
@@ -50,10 +52,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	int objects = 20;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	FVector mapCenter;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	float longestSide;
 
 	UPROPERTY(VisibleAnywhere)
@@ -63,6 +65,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	FVector2D endLocation;
+
+	int newWidth;
+
+	int newHeight;
+
+	int newLines;
 
 	void EndGame(bool bVictory);
 
@@ -77,6 +85,20 @@ public:
 	int GetWidth();
 
 	int GetHeight();
+
+	int GetLines();
+
+	int GetNewWidth();
+
+	int GetNewHeight();
+
+	int GetNewLines();
+
+	void AlterNewWidth(int diff);
+
+	void AlterNewHeight(int diff);
+
+	void AlterNewLines(int diff);
 
 	TMap<FString, bool> GameMap;
 

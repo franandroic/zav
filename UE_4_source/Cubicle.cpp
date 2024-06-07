@@ -55,10 +55,10 @@ void ACubicle::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ACubicle::ToggleMaterial()
 {
 	if (!bIsSelected) {
-		if (CubicleMaterial) MeshComponent->SetMaterial(0, CubicleMaterial);
+		if (CubicleMaterial && MeshComponent) MeshComponent->SetMaterial(0, CubicleMaterial);
 	}
 	else {
-		if (CubicleMaterial) MeshComponent->SetMaterial(0, CubicleHMaterial);
+		if (CubicleMaterial && MeshComponent) MeshComponent->SetMaterial(0, CubicleHMaterial);
 	}
 }
 

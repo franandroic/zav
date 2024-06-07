@@ -14,6 +14,12 @@ void ASparkyPuzzleGameModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    newWidth = width;
+    newHeight = height;
+    newLines = lines;
+
+    controller = Cast<ASparkyPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+
     regenerateMap();
 }
 
@@ -35,7 +41,12 @@ void ASparkyPuzzleGameModeBase::regenerateMap()
 {
     seed = time(0);
 
+    width = newWidth;
+    height = newHeight;
+    lines = newLines;
+
     resetMap();
+    if (controller) controller->setupCameras();  
 }
 
 void ASparkyPuzzleGameModeBase::resetMap()
@@ -148,6 +159,41 @@ int ASparkyPuzzleGameModeBase::GetWidth()
 int ASparkyPuzzleGameModeBase::GetHeight()
 {
     return height;
+}
+
+int ASparkyPuzzleGameModeBase::GetLines()
+{
+    return lines;
+}
+
+int ASparkyPuzzleGameModeBase::GetNewWidth()
+{
+    return newWidth;
+}
+
+int ASparkyPuzzleGameModeBase::GetNewHeight()
+{
+    return newHeight;
+}
+
+int ASparkyPuzzleGameModeBase::GetNewLines()
+{
+    return newLines;
+}
+
+void ASparkyPuzzleGameModeBase::AlterNewWidth(int diff)
+{
+    newWidth += diff;
+}
+
+void ASparkyPuzzleGameModeBase::AlterNewHeight(int diff)
+{
+    newHeight += diff;
+}
+
+void ASparkyPuzzleGameModeBase::AlterNewLines(int diff)
+{
+    newLines += diff;
 }
 
 void ASparkyPuzzleGameModeBase::EndGame(bool bVictory)
