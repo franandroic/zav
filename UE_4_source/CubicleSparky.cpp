@@ -11,11 +11,11 @@ ACubicleSparky::ACubicleSparky()
     if (MeshAsset.Succeeded()) MeshComponent->SetStaticMesh(MeshAsset.Object);
     else UE_LOG(LogTemp, Warning, TEXT("MeshAsset(Sparky) failed."));
 
-    static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialAsset(TEXT("Material'/Game/sparkyTMaterial.sparkyTMaterial'"));
+    static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialAsset(TEXT("Material'/Game/sparkyHMaterial.sparkyHMaterial'"));
     if (MaterialAsset.Succeeded()) CubicleMaterial = MaterialAsset.Object;
     else UE_LOG(LogTemp, Warning, TEXT("MaterialAsset(Sparky) failed."));
 
-    static ConstructorHelpers::FObjectFinder<UMaterialInterface> HighlightedAsset(TEXT("Material'/Game/sparkyHMaterial.sparkyHMaterial'"));
+    static ConstructorHelpers::FObjectFinder<UMaterialInterface> HighlightedAsset(TEXT("Material'/Game/sparkyTMaterial.sparkyTMaterial'"));
     if (HighlightedAsset.Succeeded()) CubicleHMaterial = HighlightedAsset.Object;
     else UE_LOG(LogTemp, Warning, TEXT("HighlightedAsset(Sparky) failed."));
 

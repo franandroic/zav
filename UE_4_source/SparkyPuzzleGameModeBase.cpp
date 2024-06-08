@@ -46,7 +46,7 @@ void ASparkyPuzzleGameModeBase::regenerateMap()
     lines = newLines;
 
     resetMap();
-    if (controller) controller->setupCameras();  
+    if (controller) controller->setupCameras();
 }
 
 void ASparkyPuzzleGameModeBase::resetMap()
@@ -151,6 +151,11 @@ float ASparkyPuzzleGameModeBase::GetLongestSide()
     return longestSide;
 }
 
+int ASparkyPuzzleGameModeBase::GetSeed()
+{
+    return seed;
+}
+
 int ASparkyPuzzleGameModeBase::GetWidth()
 {
     return width;
@@ -235,4 +240,6 @@ void ASparkyPuzzleGameModeBase::DeleteMap()
     for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
         if (ActorItr->GetName().Left(5) == TEXT("Floor")) ActorItr->Destroy();
     }
+
+    controller->dereferenceSelected();
 }

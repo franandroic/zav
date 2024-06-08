@@ -4,6 +4,8 @@
 #include "SparkyPlayerController.h"
 #include "SparkyPuzzleGameModeBase.h"
 
+ASparkyPuzzleGameModeBase* gamemode;
+
 ASparkyPlayerController::ASparkyPlayerController()
 {
     InputComponent = CreateDefaultSubobject<UInputComponent>(TEXT("InputComponent"));
@@ -26,14 +28,22 @@ ASparkyPlayerController::ASparkyPlayerController()
         InputComponent->BindAction("WidthMinus", IE_Pressed, this, &ASparkyPlayerController::SubtractWidth);
         InputComponent->BindAction("HeightPlus", IE_Pressed, this, &ASparkyPlayerController::AddHeight);
         InputComponent->BindAction("HeightMinus", IE_Pressed, this, &ASparkyPlayerController::SubtractHeight);
+        InputComponent->BindAction("LinesPlus", IE_Pressed, this, &ASparkyPlayerController::AddLines);
+        InputComponent->BindAction("LinesMinus", IE_Pressed, this, &ASparkyPlayerController::SubtractLines);
 
     }
+
+    BirdCameraActorOne = nullptr;
+    BirdCameraActorTwo = nullptr;
+    SelectedCubicle = nullptr;
 }
 
 
 void ASparkyPlayerController::BeginPlay()
 {
     Super::BeginPlay();
+
+    gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
 
     bShowMouseCursor = true;
 
@@ -44,8 +54,6 @@ void ASparkyPlayerController::BeginPlay()
 
 void ASparkyPlayerController::SelectObject()
 {   
-    if (!GetWorld()) return;
-
     FVector2D screenPosition;
     FVector2D mousePosition;
     int windowSizeX;
@@ -54,25 +62,21 @@ void ASparkyPlayerController::SelectObject()
     GetMousePosition(mousePosition.X, mousePosition.Y);
     GetViewportSize(windowSizeX, windowSizeY);
 
-    for (TActorIterator<APawn> PawnItr(GetWorld()); PawnItr; ++PawnItr) {
-        if (PawnItr->GetName().Left(7) == TEXT("Cubicle")) {
+    for (TActorIterator<ACubicle> PawnItr(GetWorld()); PawnItr; ++PawnItr) {
 
-            if (UGameplayStatics::ProjectWorldToScreen(this, PawnItr->GetActorLocation(), screenPosition)) {
-                if ((mousePosition - screenPosition).Size() < 25) {
+        if (UGameplayStatics::ProjectWorldToScreen(this, PawnItr->GetActorLocation(), screenPosition)) {
+            if ((mousePosition - screenPosition).Size() < 25) {
 
-                    ACubicle *ClickedCubicle = Cast<ACubicle>(*PawnItr);
-                    if (!ClickedCubicle) return;
-                    UE_LOG(LogTemp, Warning, TEXT("%s (%f, %f)"), *ClickedCubicle->GetName(), screenPosition.X, screenPosition.Y);
+                UE_LOG(LogTemp, Warning, TEXT("%s (%f, %f)"), *PawnItr->GetName(), screenPosition.X, screenPosition.Y);
 
-                    if (SelectedCubicle) {
-                        SelectedCubicle->bIsSelected = false;
-                        SelectedCubicle->ToggleMaterial();
-                    }
-
-                    ClickedCubicle->bIsSelected = true;
-                    ClickedCubicle->ToggleMaterial();
-                    SelectedCubicle = ClickedCubicle;
+                if (SelectedCubicle) {
+                    SelectedCubicle->bIsSelected = false;
+                    SelectedCubicle->ToggleMaterial();
                 }
+
+                PawnItr->bIsSelected = true;
+                PawnItr->ToggleMaterial();
+                SelectedCubicle = *PawnItr;
             }
         }
     }
@@ -80,8 +84,6 @@ void ASparkyPlayerController::SelectObject()
 
 void ASparkyPlayerController::SlideUp()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
     if (gamemode->state != 0) return;
 
     if (SelectedCubicle) {
@@ -130,8 +132,6 @@ void ASparkyPlayerController::SlideUp()
 
 void ASparkyPlayerController::SlideLeft()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
     if (gamemode->state != 0) return;
 
     if (SelectedCubicle) {
@@ -180,8 +180,6 @@ void ASparkyPlayerController::SlideLeft()
 
 void ASparkyPlayerController::SlideDown()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
     if (gamemode->state != 0) return;
 
     if (SelectedCubicle) {
@@ -230,8 +228,6 @@ void ASparkyPlayerController::SlideDown()
 
 void ASparkyPlayerController::SlideRight()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
     if (gamemode->state != 0) return;
 
     if (SelectedCubicle) {
@@ -280,39 +276,28 @@ void ASparkyPlayerController::SlideRight()
 
 void ASparkyPlayerController::ReloadMap()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
-
     gamemode->ReloadMap();
 }
 
 void ASparkyPlayerController::RefreshMap()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
-
     gamemode->RefreshMap();
 }
 
 void ASparkyPlayerController::ChangeCamera()
 {
-    if (!GetWorld()) return;
-
     if (GetViewTarget() == BirdCameraActorOne) SetViewTarget(BirdCameraActorTwo);
     else if (GetViewTarget() == BirdCameraActorTwo) SetViewTarget(BirdCameraActorOne);
-
 }
 
 void ASparkyPlayerController::ShowInfo()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
-
-    float difficulty = (gamemode->GetLines() / 10) / ((gamemode->GetWidth() / 10) * (gamemode->GetHeight() / 10));
+    float difficulty = ((float) gamemode->GetLines() / 10.0f) / (((float) gamemode->GetWidth() / 10.0f) * ((float) gamemode->GetHeight() / 10.0f));
 
     if (GEngine) {
         GEngine->AddOnScreenDebugMessage(0, 10.0f, FColor::Black, FString::Printf(
-            TEXT("<Top-To-Bottom: %d>\n<Left-To-Right: %d>\n<Count-Of-Lines: %d>\n<Difficulty: %.1f>"),
+            TEXT("<SEED: %d>\n<Top-To-Bottom: %d>\n<Left-To-Right: %d>\n<Num-Of-Lines: %d>\n<Difficulty: %.2f>"),
+            gamemode->GetSeed(),
             gamemode->GetWidth(),
             gamemode->GetHeight(),
             gamemode->GetLines(),
@@ -323,9 +308,6 @@ void ASparkyPlayerController::ShowInfo()
 
 void ASparkyPlayerController::AddWidth()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
-
     if (gamemode->GetWidth() == 20 || gamemode->GetNewWidth() == 20) return;
 
     gamemode->AlterNewWidth(1);
@@ -333,9 +315,6 @@ void ASparkyPlayerController::AddWidth()
 
 void ASparkyPlayerController::SubtractWidth()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
-
     if (gamemode->GetWidth() == 10 || gamemode->GetNewWidth() == 10) return;
 
     gamemode->AlterNewWidth(-1);
@@ -343,9 +322,6 @@ void ASparkyPlayerController::SubtractWidth()
 
 void ASparkyPlayerController::AddHeight()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
-
     if (gamemode->GetHeight() == 20 || gamemode->GetNewHeight() == 20) return;
 
     gamemode->AlterNewHeight(1);
@@ -353,24 +329,39 @@ void ASparkyPlayerController::AddHeight()
 
 void ASparkyPlayerController::SubtractHeight()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
-
     if (gamemode->GetHeight() == 10 || gamemode->GetNewHeight() == 10) return;
 
     gamemode->AlterNewHeight(-1);
 }
 
+void ASparkyPlayerController::AddLines()
+{
+    if (gamemode->GetLines() == 20 || gamemode->GetNewLines() == 20) return;
+
+    gamemode->AlterNewLines(1);
+}
+
+void ASparkyPlayerController::SubtractLines()
+{
+    if (gamemode->GetLines() == 10 || gamemode->GetNewLines() == 10) return;
+
+    gamemode->AlterNewLines(-1);
+}
+
 void ASparkyPlayerController::setupCameras()
 {
-    if (!GetWorld()) return;
-    ASparkyPuzzleGameModeBase* gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
+    gamemode = Cast<ASparkyPuzzleGameModeBase>(GetWorld()->GetAuthGameMode());
 
     FVector mapCenter = gamemode->GetMapCenter();
     float longestSide = gamemode->GetLongestSide();
 
-    BirdCameraActorOne = GetWorld()->SpawnActor<ABirdCamera>(FVector(mapCenter.X, mapCenter.Y, longestSide + 900.0f), FRotator(-90.0f, 0.0f, 0.0f));
-    BirdCameraActorTwo = GetWorld()->SpawnActor<ABirdCamera>(FVector(-900.0f - 0.2 * longestSide, mapCenter.Y, longestSide), FRotator(-1 * FMath::RadiansToDegrees(FMath::Atan(mapCenter.X / (longestSide + 900.0f))), 0.0f, 0.0f));
+    BirdCameraActorOne = GetWorld()->SpawnActor<ABirdCamera>(FVector(mapCenter.X, mapCenter.Y, longestSide + 900.0f + 0.5 * longestSide), FRotator(-90.0f, 0.0f, 0.0f));
+    BirdCameraActorTwo = GetWorld()->SpawnActor<ABirdCamera>(FVector(-900.0f - 0.7 * longestSide, mapCenter.Y, longestSide), FRotator(-1 * FMath::RadiansToDegrees(FMath::Atan(mapCenter.X / (longestSide + 900.0f))), 0.0f, 0.0f));
 
     SetViewTarget(BirdCameraActorOne);
+}
+
+void ASparkyPlayerController::dereferenceSelected()
+{
+    SelectedCubicle = nullptr;
 }

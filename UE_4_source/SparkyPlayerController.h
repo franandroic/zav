@@ -59,8 +59,14 @@ private:
 
 	void SubtractHeight();
 
+	void AddLines();
+
+	void SubtractLines();
+
 public:
 
 	void setupCameras();
+
+	void dereferenceSelected();
 	
 };

@@ -61,8 +61,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	int seed;
 
-	ACubicle* SparkyHimself;
-
 	UPROPERTY(VisibleAnywhere)
 	FVector2D endLocation;
 
@@ -78,9 +76,13 @@ private:
 
 public:
 
+	ACubicle* SparkyHimself;
+
 	FVector GetMapCenter();
 
 	float GetLongestSide();
+
+	int GetSeed();
 
 	int GetWidth();
 
