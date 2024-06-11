@@ -1,4 +1,6 @@
 # **Izrada logičke računalne igre**
+Fakultet elektrotehnike i računarstva\
+Fran Androić\
 
 **Cilj igre:**\
   Pravocrtnim pomacima dovesti zvrk do ciljnog polja.
